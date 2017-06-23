@@ -214,7 +214,10 @@
       Front.on('conversation', function (data) {
         for (var i = 0; i < allContacts.length; i++) {
           if (allContacts[i][1]=="Noah Roth") {
-            $('body').append("all contacts: " + allContacts[i])
+            $('body').append("<p>current contact: " + allContacts[i] + "</p>")
+          }
+          else {
+            $('body').append("not Noah Roth: " + allContacts[i][1])
           };
         };
         $('body').append("<p>"+data.contact.display_name+"</p>")
