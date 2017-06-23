@@ -6,13 +6,6 @@
     <link rel="stylesheet" href="/resources/demos/style.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-    $( function() {
-      $( "#datepicker" ).datepicker();
-    } );
-    </script>
-
-    <p>Date: <input type="text" id="datepicker"></p>
 
     <style>
       body {
@@ -24,19 +17,42 @@
         margin-right: auto;
         margin-top: 2px;
       }
+      form {
+        text-align: center;
+      }
     </style>
     <script type="text/javascript" src="https://dl.frontapp.com/libs/frontjs.min.js"></script>
     <script type="text/javascript" src="test-plugin.js"></script>
+    <script>
+      // calendar picker
+      $( function() {
+        $( "#datepicker" ).datepicker();
+      } );
+    </script>
+
   </head>
   <body>
     <h1>Google Sheets Editing</h1>
 
+    <pre id="content"></pre>
+<!--     <button id="edit">Edit</button>  -->
+
+    <div>
+      <p>Restaurant: <input></p>
+      <p>Date: <input type="text" id="datepicker"></p>
+      <p>Number of people: <input></p>
+      <p>Prefered time range: <input></p>
+      <p>Exact Time: <input></p>
+      <p>Notes: <input></p>
+      <button id="cancel-changes">Cancel</button>
+      <button id="edit-contact">Save Changes</button>
+    </div>
+
     <!--Add buttons to initiate auth sequence and sign out-->
+    <br><br><br>
     <button id="authorize-button" style="display: none;">Authorize</button>
     <button id="signout-button" style="display: none;">Sign Out</button>
 
-    <pre id="content"></pre>
-    <button id="edit">Edit</button>
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
@@ -121,27 +137,30 @@
         pre.appendChild(textContent);
       }
 
+      allContacts = []
+
       function listMajors() {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
           range: 'A1:C10',
         }).then(function(response) {
           var range = response.result;
-          if (range.values.length > 0) {
+          allContacts = range.values
+          // if (range.values.length > 0) {
             
-            // $('body').append("<p>"++"</p>")
-            console.log(range.values)
+          //   // $('body').append("<p>"++"</p>")
+          //   console.log(range.values)
 
-            appendPre('Name, Major:');
-            for (i = 0; i < range.values.length; i++) {
-              var row = range.values[i];
-              // Print columns A and E, which correspond to indices 0 and 4.
-              appendPre(row)
-              // appendPre(row[0] + ', ' + row[2]);
-            }
-          } else {
-            appendPre('No data found.');
-          }
+          //   appendPre('Name, Major:');
+          //   for (i = 0; i < range.values.length; i++) {
+          //     var row = range.values[i];
+          //     // Print columns A and E, which correspond to indices 0 and 4.
+          //     appendPre(row)
+          //     // appendPre(row[0] + ', ' + row[2]);
+          //   }
+          // } else {
+          //   appendPre('No data found.');
+          // }
         }, function(response) {
           appendPre('Error: ' + response.result.error.message);
         });
@@ -183,7 +202,7 @@
     }
 
       edit = document.getElementById('edit')
-      edit.onclick = editSpreadsheet;
+      // edit.onclick = editSpreadsheet;
 
       function editSpreadsheet(event) {
         input = window.prompt("New Value", "haha")
@@ -193,9 +212,15 @@
 
       // front-specific
       Front.on('conversation', function (data) {
-        $('body').append("<p>"+data.contact["handle"]+"</p>")
-        console.log('Contact', data.contact);
+        for (var i = 0; i < allContacts.length; i++) {
+          if (allContacts[i][1]==data.contact["display_name"]) {
+            $('body').append("all contacts: " + allContacts[i])
+          };
+        };
+        $('body').append("<p>"+data.contact["display_name"]+"</p>")
+        console.log('Contact', data.contact.display_name);
       });
+
 
     </script>
 
