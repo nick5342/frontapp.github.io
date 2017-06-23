@@ -142,7 +142,7 @@
       function listMajors() {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
-          range: 'A1:C10',
+          range: 'A1:C100',
         }).then(function(response) {
           var range = response.result;
           allContacts = range.values
