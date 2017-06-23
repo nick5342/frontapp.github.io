@@ -172,6 +172,7 @@
         var notes = $('#form-notes').val();
 
         appendSheet([currentTime, name, restaurant, date, number, range, time, notes]);
+        $('#new-event-form')[0].reset();
       });
 
       $('#cancel-changes').click(function() {
