@@ -193,8 +193,11 @@
 
       // front-specific
       Front.on('conversation', function (data) {
-        $('body').append("<p>"+data["contact"["handle"]]+"</p>")
+        $('body').append("<p>"+Contact["handle"]]+"</p>")
+        console.log("data" + data)
       });
+
+      console.log("contact info" + Contact)
 
     </script>
 
