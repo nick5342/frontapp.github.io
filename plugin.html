@@ -213,12 +213,11 @@
       // front-specific
       Front.on('conversation', function (data) {
         for (var i = 0; i < allContacts.length; i++) {
-          if (allContacts[i][1]==data.contact["display_name"]) {
+          if (allContacts[i][1]=="Noah Roth") {
             $('body').append("all contacts: " + allContacts[i])
           };
         };
-        $('body').append("<p>"+data.contact["display_name"]+"</p>")
-        console.log('Contact', data.contact.display_name);
+        $('body').append("<p>"+data.contact.display_name+"</p>")
       });
 
 
