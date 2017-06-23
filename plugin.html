@@ -10,15 +10,19 @@
     <style>
       body {
       }
+      h1 {
+        text-align: center;
+      }
       button {
-        display: block;
+/*        display: block;
         width: 250px;
         margin-left: auto;
         margin-right: auto;
-        margin-top: 2px;
+        margin-top: 2px;*/
       }
       form {
-        text-align: center;
+        text-align: right;
+        margin-right: 50%;
       }
     </style>
     <script type="text/javascript" src="https://dl.frontapp.com/libs/frontjs.min.js"></script>
@@ -38,14 +42,17 @@
 <!--     <button id="edit">Edit</button>  -->
 
     <div>
-      <p>Restaurant: <input></p>
-      <p>Date: <input type="text" id="datepicker"></p>
-      <p>Number of people: <input></p>
-      <p>Prefered time range: <input></p>
-      <p>Exact Time: <input></p>
-      <p>Notes: <input></p>
-      <button id="cancel-changes">Cancel</button>
-      <button id="edit-contact">Save Changes</button>
+      <form id="new-event-form">
+        <p>Name: <input id="form-name"></p>
+        <p>Restaurant: <input id="form-restaurant"></p>
+        <p>Date: <input class="form-date" type="text" id="datepicker"></p>
+        <p>Number of people: <input id="form-number"></p>
+        <p>Prefered time range: <input id="form-range"></p>
+        <p>Exact Time: <input id="form-time"></p>
+        <p>Notes: <input id="form-notes"></p>
+        <button id="cancel-changes">Cancel</button>
+        <button id="commit-changes" onclick="return false">Commit</button>
+      </form>
     </div>
 
     <!--Add buttons to initiate auth sequence and sign out-->
@@ -201,28 +208,105 @@
         });
     }
 
-      edit = document.getElementById('edit')
+      // edit = document.getElementById('edit')
       // edit.onclick = editSpreadsheet;
 
-      function editSpreadsheet(event) {
-        input = window.prompt("New Value", "haha")
-        updateMajors(input)
-        // alert(input)
-      }
+      // function editSpreadsheet(event) {
+      //   input = window.prompt("New Value", "haha")
+      //   updateMajors(input)
+      //   // alert(input)
+      // }
 
       // front-specific
-      Front.on('conversation', function (data) {
-        for (var i = 0; i < allContacts.length; i++) {
-          if (allContacts[i][1]=="Noah Roth") {
-            $('body').append("<p>current contact: " + allContacts[i] + "</p>")
-          }
-          else {
-            $('body').append("not Noah Roth: " + allContacts[i][1])
-          };
-        };
-        $('body').append("<p>"+data.contact.display_name+"</p>")
-      });
+      // Front.on('conversation', function (data) {
+      //   for (var i = 0; i < allContacts.length; i++) {
+      //     if (allContacts[i][1]=="Noah Roth") {
+      //       $('body').append("<p>current contact: " + allContacts[i] + "</p>")
+      //     }
+      //     else {
+      //       $('body').append("No contact information found")
+      //     };
+      //   };
+      //   $('body').append("<p>"+data.contact.display_name+"</p>")
+      // });
 
+      function appendSheet(array) {
+        var params = {
+          // The ID of the spreadsheet to update.
+          spreadsheetId: '1XQa7XWyi4PlmsGlURZCj2lUQXFvcyJdOgn8q3QBEatY',
+
+          // The A1 notation of a range to search for a logical table of data.
+          // Values will be appended after the last row of the table.
+          range: 'A1:C10',
+
+          // How the input data should be interpreted.
+          valueInputOption: "RAW",
+
+          // How the input data should be inserted.
+          insertDataOption: 'INSERT_ROWS',
+        };
+
+        var valueRangeBody = {
+          "majorDimension": "COLUMNS",
+          "values": [
+            [
+              array[0]
+            ],
+            [
+              array[1]
+            ],
+            [
+              array[2]
+            ],
+            [
+              array[3]
+            ],
+            [
+              array[4]
+            ],
+            [
+              array[5]
+            ],
+            [
+              array[6]
+            ],
+            [
+              array[7]
+            ]
+          ]        
+        };
+
+        var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+        request.then(function(response) {
+          // TODO: Change code below to process the `response` object:
+          console.log(response.result);
+        }, function(reason) {
+          console.error('error: ' + reason.result.error.message);
+        });
+      }
+
+      var ampm = function(date) {
+        if (date > 11 && date < 24) {return "PM"}
+        else { return "AM" };
+      };
+
+      $('#commit-changes').click(function() {
+        var currentTime = new Date();
+        var name = $('#form-name').val();
+        var restaurant = $('#form-restaurant').val();
+        var date = $('.form-date').val();
+        var number = $('#form-number').val();
+        var range = $('#form-range').val();
+        var time = $('#form-time').val();
+        var notes = $('#form-notes').val();
+
+        // var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        // var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+        // alert(weekdays[time.getDay()] + ", " + months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ", " + (time.getHours() % 12 || 12) + ":" + time.getMinutes() + ":" + time.getSeconds() + " " + ampm(time.getHours()))
+
+        appendSheet([currentTime, name, restaurant, date, number, range, time, notes]);
+      });
 
     </script>
 
