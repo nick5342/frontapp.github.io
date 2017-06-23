@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    $( function() {
+      $( "#datepicker" ).datepicker();
+    } );
+    </script>
+
+    <p>Date: <input type="text" id="datepicker"></p>
+
     <style>
       body {
       }
@@ -16,20 +29,7 @@
     <script type="text/javascript" src="test-plugin.js"></script>
   </head>
   <body>
-    <h1>Hello world</h1>
-    <button onClick="unassign()">Unassign</button>
-    <button onClick="toggleArchive()">Archive/Unarchive</button>
-    <button onClick="toggleTrashed()">Trash/Untrash</button>
-    <button onClick="reply()">Reply</button>
-    <button onClick="alertDialog()">Pop alert dialog</button>
-    <button onClick="confirmDialog()">Pop confirm dialog</button>
-    <button onClick="promptDialog()">Pop prompt dialog</button>
-    <button onclick="fetchTeammates()">Fetch teammates</button>
-    <button onclick="fetchInboxes()">Fetch inboxes</button>
-
-
-
-    <p>Google Sheets API Quickstart</p>
+    <h1>Google Sheets Editor</h1>
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize-button" style="display: none;">Authorize</button>
@@ -127,8 +127,8 @@
        */
       function listMajors() {
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1XQa7XWyi4PlmsGlURZCj2lUQXFvcyJdOgn8q3QBEatY',
-          range: 'A1:C2',
+          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
+          range: 'A1:C10',
         }).then(function(response) {
           var range = response.result;
           if (range.values.length > 0) {
@@ -155,7 +155,7 @@
           spreadsheetId: '1XQa7XWyi4PlmsGlURZCj2lUQXFvcyJdOgn8q3QBEatY',
 
           // The A1 notation of the values to update.
-          range: 'A1:C2',
+          range: 'A1:C10',
 
           // How the input data should be interpreted.
           valueInputOption: "RAW",
@@ -190,6 +190,11 @@
         updateMajors(input)
         // alert(input)
       }
+
+      // front-specific
+      Front.on('conversation', function (data) {
+        $('body').append("<p>"contact["handle"]"</p>")
+      });
 
     </script>
 
