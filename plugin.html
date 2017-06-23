@@ -50,7 +50,7 @@
         <p>Prefered time range: <input id="form-range"></p>
         <p>Exact Time: <input id="form-time"></p>
         <p>Notes: <input id="form-notes"></p>
-        <button id="cancel-changes">Cancel</button>
+        <button id="cancel-changes" onclick="return false">Cancel</button>
         <button id="commit-changes" onclick="return false">Commit</button>
       </form>
     </div>
@@ -306,6 +306,10 @@
         // alert(weekdays[time.getDay()] + ", " + months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ", " + (time.getHours() % 12 || 12) + ":" + time.getMinutes() + ":" + time.getSeconds() + " " + ampm(time.getHours()))
 
         appendSheet([currentTime, name, restaurant, date, number, range, time, notes]);
+      });
+
+      $('#cancel-changes').click(function() {
+        $('#new-event-form')[0].reset();
       });
 
     </script>
