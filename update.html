@@ -19,6 +19,9 @@
       form {
         text-align: center;
       }
+      p {
+        margin: 0;
+      }
     </style>
 
     <script>
@@ -39,7 +42,9 @@
         <div class="ui-widget">
           <p>Name: <br> <input id="tags" class="form-name" type="text"></p>
         </div>
-        <p>Restaurant: <br> <input id="form-restaurant" type="text"></p>
+        <div class="ui-widget">
+          <p>Restaurant: <br> <input id="r-tags" class="form-restaurant" type="text"></p>
+        </div>
         <p>Date: <br> <input class="form-date" type="text" id="datepicker"></p>
         <p>Number of people: <br> <input id="form-number" type="text"></p>
         <p>Prefered time range: <br> <input id="form-range" type="text"></p>
@@ -107,6 +112,7 @@
           authorizeButton.style.display = 'none';
           signoutButton.style.display = 'block';
           collectNames();
+          collectRestaurants();
         } else {
           authorizeButton.style.display = 'block';
           signoutButton.style.display = 'none';
@@ -135,8 +141,24 @@
           range: 'B1:B100',
         }).then(function(response) {
           var range = response.result;
-          for (var i = 0; i < range.values.length; i++) {
+          for (var i = 1; i < range.values.length; i++) {
             approvedNames.push(range.values[i][0])
+          };
+        }, function(response) {
+          console.log('Error: ' + response.result.error.message);
+        });
+      }
+
+      approvedRestaurants = []
+
+      function collectRestaurants() {
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
+          range: 'C1:C100',
+        }).then(function(response) {
+          var range = response.result;
+          for (var i = 1; i < range.values.length; i++) {
+            approvedRestaurants.push(range.values[i][0])
           };
         }, function(response) {
           console.log('Error: ' + response.result.error.message);
@@ -173,28 +195,62 @@
       }
 
       $( function() {
-        var availableTags = approvedNames
         $( "#tags" ).autocomplete({
-          source: availableTags
+          source: approvedNames
         });
       } );
 
-      // var ampm = function(date) {
-      //   if (date > 11 && date < 24) {return "PM"}
-      //   else { return "AM" };
-      // };
+      $( function() {
+        $( "#r-tags" ).autocomplete({
+          source: approvedRestaurants
+        });
+      } );
+
+      var ampm = function(date) {
+        if (date > 11 && date < 24) {return "PM"}
+        else { return "AM" };
+      };
+
+      function addZeros(number) {
+        if (number.toString().length < 2) {return "0" + number.toString()}
+        else { return number.toString() };
+      }
+
+      function removeZeros(number) {
+        if (number.toString().split('')[0]=="0") {return Number(number.toString().split('')[1])}
+        else {return number};
+      }
+
+      weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+      function formatTime() {
+        time = new Date()
+
+        return(weekdays[time.getDay()] + ", " + months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ", " + (time.getHours() % 12 || 12) + ":" + addZeros(time.getMinutes()) + ":" + addZeros(time.getSeconds()) + " " + ampm(time.getHours()))
+      }
+
+      function formatDate() {
+        var output = $('.form-date').val()
+        var dayOfWeek = new Date(output).getDay();    
+        var output = output.toString().split("/")
+        return(weekdays[dayOfWeek] + ", " + months[removeZeros(output[0])] + " " + removeZeros(output[1]) + ", " + output[2])
+      }
 
       $('#commit-changes').click(function() {
-        var currentTime = new Date();
+        // var currentTime = new Date();
         var name = $('.form-name').val();
-        var restaurant = $('#form-restaurant').val();
+        var restaurant = $('.form-restaurant').val();
         var date = $('.form-date').val();
         var number = $('#form-number').val();
         var range = $('#form-range').val();
         var time = $('#form-time').val();
         var notes = $('#form-notes').val();
 
-        appendSheet([currentTime, name, restaurant, date, number, range, time, notes]);
+
+        appendSheet([formatTime(), name, restaurant, formatDate(date), number, range, time, notes]);
+        collectNames()
+        collectRestaurants()
         $('#new-event-form')[0].reset();
       });
 
