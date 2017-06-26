@@ -47,7 +47,6 @@
         </div>
         <p>Date: <br> <input class="form-date" type="text" id="datepicker"></p>
         <p>Number of people: <br> <input id="form-number" type="text"></p>
-        <p>Prefered time range: <br> <input id="form-range" type="text"></p>
         <p>Exact Time: <br> <input id="form-time" type="text"></p>
         <p>Notes: <br> <textarea id="form-notes"></textarea></p>
         <button id="cancel-changes" onclick="return false">Cancel</button>
@@ -137,8 +136,8 @@
 
       function collectNames() {
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
-          range: 'B1:B100',
+          spreadsheetId: '1qyrXhXNsrDepYuIGALw7oEMP2qKDd5AEBUulhDU57OE',
+          range: 'Name List!G:G',
         }).then(function(response) {
           var range = response.result;
           for (var i = 1; i < range.values.length; i++) {
@@ -153,8 +152,8 @@
 
       function collectRestaurants() {
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
-          range: 'C1:C100',
+          spreadsheetId: '1qyrXhXNsrDepYuIGALw7oEMP2qKDd5AEBUulhDU57OE',
+          range: 'Name List!C:C',
         }).then(function(response) {
           var range = response.result;
           for (var i = 1; i < range.values.length; i++) {
@@ -168,11 +167,11 @@
       function appendSheet(array) {
         var params = {
           // The ID of the spreadsheet to update.
-          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
+          spreadsheetId: '1qyrXhXNsrDepYuIGALw7oEMP2qKDd5AEBUulhDU57OE',
 
           // The A1 notation of a range to search for a logical table of data.
           // Values will be appended after the last row of the table.
-          range: 'A1:C10',
+          range: 'Requests',
 
           // How the input data should be interpreted.
           valueInputOption: "RAW",
@@ -243,7 +242,7 @@
         var restaurant = $('.form-restaurant').val();
         var date = $('.form-date').val();
         var number = $('#form-number').val();
-        var range = $('#form-range').val();
+        var range = ""
         var time = $('#form-time').val();
         var notes = $('#form-notes').val();
 

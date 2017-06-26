@@ -16,11 +16,9 @@
       #signout-button, #authorize-button {
         margin: auto;
       }
-      form {
-        text-align: center;
-      }
       p {
-        margin: 0;
+        margin: 10px;
+        text-align: center;
       }
     </style>
 
@@ -142,6 +140,7 @@
           }
         };
         if (exists == false) {$('body').html("<p>No contact Information found<p>")};        
+        collectContactInfo();
       });
 
     </script>
