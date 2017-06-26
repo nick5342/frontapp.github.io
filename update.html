@@ -3,6 +3,8 @@
   <head>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="skeleton.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="https://dl.frontapp.com/libs/frontjs.min.js"></script>
@@ -16,7 +18,6 @@
       }
       form {
         text-align: center;
-        margin-right: 15px;
       }
     </style>
 
@@ -35,12 +36,14 @@
 
     <div>
       <form id="new-event-form">
-        <p>Name: <br> <input id="form-name"></p>
-        <p>Restaurant: <br> <input id="form-restaurant"></p>
+        <div class="ui-widget">
+          <p>Name: <br> <input id="tags" class="form-name" type="text"></p>
+        </div>
+        <p>Restaurant: <br> <input id="form-restaurant" type="text"></p>
         <p>Date: <br> <input class="form-date" type="text" id="datepicker"></p>
-        <p>Number of people: <br> <input id="form-number"></p>
-        <p>Prefered time range: <br> <input id="form-range"></p>
-        <p>Exact Time: <br> <input id="form-time"></p>
+        <p>Number of people: <br> <input id="form-number" type="text"></p>
+        <p>Prefered time range: <br> <input id="form-range" type="text"></p>
+        <p>Exact Time: <br> <input id="form-time" type="text"></p>
         <p>Notes: <br> <textarea id="form-notes"></textarea></p>
         <button id="cancel-changes" onclick="return false">Cancel</button>
         <button id="commit-changes" onclick="return false">Commit</button>
@@ -103,7 +106,7 @@
         if (isSignedIn) {
           authorizeButton.style.display = 'none';
           signoutButton.style.display = 'block';
-          listMajors();
+          collectNames();
         } else {
           authorizeButton.style.display = 'block';
           signoutButton.style.display = 'none';
@@ -124,6 +127,21 @@
         gapi.auth2.getAuthInstance().signOut();
       }
 
+      approvedNames = []
+
+      function collectNames() {
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
+          range: 'B1:B100',
+        }).then(function(response) {
+          var range = response.result;
+          for (var i = 0; i < range.values.length; i++) {
+            approvedNames.push(range.values[i][0])
+          };
+        }, function(response) {
+          console.log('Error: ' + response.result.error.message);
+        });
+      }
 
       function appendSheet(array) {
         var params = {
@@ -154,14 +172,21 @@
         });
       }
 
-      var ampm = function(date) {
-        if (date > 11 && date < 24) {return "PM"}
-        else { return "AM" };
-      };
+      $( function() {
+        var availableTags = approvedNames
+        $( "#tags" ).autocomplete({
+          source: availableTags
+        });
+      } );
+
+      // var ampm = function(date) {
+      //   if (date > 11 && date < 24) {return "PM"}
+      //   else { return "AM" };
+      // };
 
       $('#commit-changes').click(function() {
         var currentTime = new Date();
-        var name = $('#form-name').val();
+        var name = $('.form-name').val();
         var restaurant = $('#form-restaurant').val();
         var date = $('.form-date').val();
         var number = $('#form-number').val();
