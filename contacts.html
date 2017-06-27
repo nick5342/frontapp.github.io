@@ -20,6 +20,21 @@
         margin: 10px;
         text-align: center;
       }
+      #refresh {
+        border: none;
+        text-transform: none;
+        font-size: 1em;
+      }
+      .centered-div {
+        text-align: center;
+      }
+      #scrollbox {
+        white-space: pre-wrap;
+        max-height: 200px;
+        width: 50%;
+        overflow: scroll;
+        margin: auto;
+      }
     </style>
 
     <script>
@@ -32,6 +47,10 @@
   </head>
   <body>
     <h2>Contact Information</h2>
+
+    <div class="centered-div"><button id="refresh" onclick="return false">&#8634; Refresh</button></div>
+
+    <div id="output"></div>
 
     <pre id="content"></pre>
 
@@ -113,35 +132,132 @@
       }
 
 
-      function display(name, other, other2) {
-        $('body').html("<p>" + name + "<br>" + other + "<br>" + other2 + "</p>")
+      contactInfo = {}
+      contactInfo2 = {}
+      past_reservations = {}
+      future_reservations = {}
+      console.log(past_reservations)
+      
+      function display(array, array2) {
+        var part1 = "<p>Email: " + array[0] + "<br>Phone: " + array[1] + "<br>Restaurant: " + array[2] + "</p><p>Profile: </p><div id='scrollbox'>" + array[3] + "</div><p>Requests: " + array2[0] + "<br>Request frequency: " + array2[1] + "<br>Success rate: " + array2[2] + "</p>"
+
+        var part2 = "<p>Past reservations: </p><div id='scrollbox'><br>"
+        for (var i = 0; i < past_reservations[array[2]].length; i++) {
+          part2 += "" + past_reservations[array[2]][i] + "<br>"
+        };
+        part2 += "</div>"
+
+        var part3 = "<p>Future reservations: </p><div id='scrollbox'><br>"
+
+        if (future_reservations.length > 0) {
+          for (var i = 0; i < future_reservations[array[2]].length; i++) {
+            part3 += "" + future_reservations[array[2]][i] + "<br>"
+          };
+        };
+
+        part3 += "</div>"
+
+        $('#output').html(part1 + part2 + part3)
       }
 
-      contactInfo = []
+      function frontOn() {
+        name = 'Mo Koyfman'
+        display(contactInfo[name], contactInfo2[name])
+      }
 
       function collectContactInfo() {
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1pIR548rva4o_xW7f6Px4NcxX3OayEVfU-SCixXeXcjU',
-          range: 'A1:D100',
+          spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
+          range: 'Master Contact',
         }).then(function(response) {
           var range = response.result;
-          contactInfo = range.values
+          for (var i = 2; i < range.values.length; i++) {
+            contactInfo[range.values[i][0]] = [range.values[i][7], range.values[i][8], range.values[i][4], range.values[i][23]]
+          };
+        }, function(response) {
+          console.log('Error: ' + response.result.error.message);
+        }); 
+
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
+          range: 'FAQs by Members',
+        }).then(function(response) {
+          var range = response.result;
+
+          for (var i = 2; i < range.values.length; i++) {
+            contactInfo2[range.values[i][0]] = [range.values[i][5], range.values[i][7], range.values[i][13]]
+          };
+
+        }, function(response) {
+          console.log('Error: ' + response.result.error.message);
+        });
+
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1CYJxaWG77ul918c1xEjlGdslHM4ataRcvh1hD8M_cP8',
+          range: 'RESERVATIONS',
+        }).then(function(response) {
+          var range = response.result;
+
+          for (var i = 2; i < range.values.length; i++) {
+
+            var date = range.values[i][0]
+            var datepart1 = date.split(", ")[1]
+            var datepart2 = date.split(", ")[2].split(" at")[0]
+            var date = datepart1 + ", " + datepart2
+
+            if (new Date() > new Date(date)) {
+              past_reservations[range.values[i][2]] = []
+            }
+            else {
+              future_reservations[range.values[i][2]] = []
+            };
+          };
+
+          for (var i = 2; i < range.values.length; i++) {
+
+            var date = range.values[i][0]
+            var datepart1 = date.split(", ")[1]
+            var datepart2 = date.split(", ")[2].split(" at")[0]
+            var date = datepart1 + ", " + datepart2
+
+            var difference = new Date() - new Date(date)
+            var difference = Math.floor(difference/1000/60/60/24);
+
+            if (difference < 60) {
+              if (new Date() > new Date(date)) {
+                past_reservations[range.values[i][2]].push(i+1) //location in document
+                past_reservations[range.values[i][2]].push(range.values[i][2])
+                past_reservations[range.values[i][2]].push(range.values[i][0])
+                past_reservations[range.values[i][2]].push(range.values[i][4])
+                past_reservations[range.values[i][2]].push(range.values[i][11])
+                past_reservations[range.values[i][2]].push(range.values[i][14])
+                past_reservations[range.values[i][2]].push(range.values[i][12])
+              }
+              else {
+                future_reservations[range.values[i][2]].push(i+1) //location in document
+                future_reservations[range.values[i][2]].push(range.values[i][2])
+                future_reservations[range.values[i][2]].push(range.values[i][0])
+                future_reservations[range.values[i][2]].push(range.values[i][4])
+                future_reservations[range.values[i][2]].push(range.values[i][11])
+                future_reservations[range.values[i][2]].push(range.values[i][14])
+                future_reservations[range.values[i][2]].push(range.values[i][12])
+              };
+            };
+          };
+
         }, function(response) {
           console.log('Error: ' + response.result.error.message);
         });
       }
 
-      Front.on('conversation', function (data) {
-        var exists = false
-        for (var i = 0; i < contactInfo.length; i++) {
-          if (contactInfo[i][1]==data.contact.display_name) {
-            exists = true
-            display(contactInfo[i][1], contactInfo[i][0], contactInfo[i][2])
-          }
-        };
-        if (exists == false) {$('body').html("<p>No contact Information found<p>")};        
-        collectContactInfo();
-      });
+      // Front.on('conversation', function (data) {
+      //     // name = data.contact.display_name
+      //     name = 'Daniel Vidolov'
+          // frontOn();
+      // });
+
+      // $('#refresh').click(function() { collectContactInfo() });
+      $('#refresh').click(function() { frontOn() });
 
     </script>
 
