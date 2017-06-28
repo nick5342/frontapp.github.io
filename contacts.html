@@ -31,10 +31,16 @@
       #scrollbox {
         white-space: pre-wrap;
         max-height: 200px;
-        width: 50%;
+        width: 90%;
         overflow: scroll;
         margin: auto;
       }
+      select, button {
+        max-height: 20px;
+        line-height: 0;
+        margin-bottom: 0;
+      }
+
     </style>
 
     <script>
@@ -61,6 +67,8 @@
 
 
     <script type="text/javascript">
+      data = {"contact":{"display_name":"Avani Patel"}} //for testing in browser
+
       // Client ID and API key from the Developer Console
       // var CLIENT_ID = '590936402413-hr4uj4vasgeirpc507ehr3s4k3nchh9b.apps.googleusercontent.com';
       var CLIENT_ID = '590936402413-rb20t115uvqn90tai3174gh6pp4ncc0t.apps.googleusercontent.com';
@@ -137,35 +145,109 @@
       past_reservations = {}
       future_reservations = {}
       console.log(past_reservations)
+      console.log(future_reservations)
       
-      function display(array, array2) {
+      function statusChange(id) {
+        value = $("#status"+id).find(':selected').text()
+        updateCell(value, "L" + id)
+        $('#output').html('');
+        collectContactInfo();
+      }
+      
+      function inviteChange(id) {
+        value = $("#invite"+id).find(':selected').text()
+        updateCell(value, "M" + id)
+        $('#output').html('');
+        collectContactInfo();
+      }
+
+      function display(array, array2, name) {
+        $('#output').append("<div id='loaded'>.</div>")
+
         var part1 = "<p>Email: " + array[0] + "<br>Phone: " + array[1] + "<br>Restaurant: " + array[2] + "</p><p>Profile: </p><div id='scrollbox'>" + array[3] + "</div><p>Requests: " + array2[0] + "<br>Request frequency: " + array2[1] + "<br>Success rate: " + array2[2] + "</p>"
 
-        var part2 = "<p>Past reservations: </p><div id='scrollbox'><br>"
-        for (var i = 0; i < past_reservations[array[2]].length; i++) {
-          part2 += "" + past_reservations[array[2]][i] + "<br>"
-        };
-        part2 += "</div>"
-
-        var part3 = "<p>Future reservations: </p><div id='scrollbox'><br>"
-
-        if (future_reservations.length > 0) {
-          for (var i = 0; i < future_reservations[array[2]].length; i++) {
-            part3 += "" + future_reservations[array[2]][i] + "<br>"
+        var part3 = "<p>Recent reservations: </p><div class='centered-div'><br>"
+        // console.log(past_reservations[name])
+        if (name in past_reservations) {
+          for (var i = 0; i < past_reservations[name].length; i++) {
+            part3 += "Restaurant: " + past_reservations[name][i][1] +
+            ", Date: " + past_reservations[name][i][2] +
+            ", # of People: " + past_reservations[name][i][3] +
+            ", Status: " + past_reservations[name][i][4] +
+            ", Confirmed Time: " + past_reservations[name][i][5] +
+            ", Calendar Invite: " + past_reservations[name][i][6] +
+            "<br>Change Status: <select id=status"+past_reservations[name][i][0]+" name='status'>" +
+              "<option value='volvo'></option>" +
+              "<option value='volvo'>CANCELED</option>" +
+              "<option value='saab'>NM PENDING</option>" +
+              "<option value='fiat'>BOL PENDING</option>" +
+              "<option value='audi'>DONE</option>" +
+              "<option value='audi'>DONE 2ND CHOICE</option>" +
+              "<option value='audi'>NOT POSSIBLE</option>" +
+              "<option value='audi'>FUTURE REQUEST</option>" +
+              "<option value='audi'>DID NOT TAKE</option>" +
+            "</select>" +
+            "<button id=status-button-"+past_reservations[name][i][0]+" class='submit-change' " +
+            "onclick='statusChange("+past_reservations[name][i][0]+")'>submit change</button><br>" +
+            "Change Invite: <select id=invite"+past_reservations[name][i][0]+" name='invite'>" +
+              "<option value='volvo'></option>" +
+              "<option value='volvo'>Send</option>" +
+            "</select>" +
+            "<button id=invite-button-"+past_reservations[name][i][0]+" class='submit-change' " +
+            "onclick='inviteChange("+past_reservations[name][i][0]+")'>submit change</button><hr>"
           };
         };
-
         part3 += "</div>"
+
+        var part2 = "<p>Future reservations: </p><div class='centered-div'><br>"
+        if (name in future_reservations) {
+          for (var i = 0; i < future_reservations[name].length; i++) {
+            part2 += "Restaurant: " + future_reservations[name][i][1] +
+            ", Date: " + future_reservations[name][i][2] +
+            ", # of People: " + future_reservations[name][i][3] +
+            ", Status: " + future_reservations[name][i][4] +
+            ", Confirmed Time: " + future_reservations[name][i][5] +
+            ", Calendar Invite: " + future_reservations[name][i][6] +
+            "<br>Change Status: <select id=status"+future_reservations[name][i][0]+" name='status'>" +
+              "<option value='volvo'></option>" +
+              "<option value='volvo'>CANCELED</option>" +
+              "<option value='saab'>NM PENDING</option>" +
+              "<option value='fiat'>BOL PENDING</option>" +
+              "<option value='audi'>DONE</option>" +
+              "<option value='audi'>DONE 2ND CHOICE</option>" +
+              "<option value='audi'>NOT POSSIBLE</option>" +
+              "<option value='audi'>FUTURE REQUEST</option>" +
+              "<option value='audi'>DID NOT TAKE</option>" +
+            "</select>" +
+            "<button id=status-button-"+future_reservations[name][i][0]+" class='submit-change' " +
+            "onclick='statusChange("+future_reservations[name][i][0]+")'>submit change</button><br>" +
+            "Change Invite: <select id=invite"+future_reservations[name][i][0]+" name='invite'>" +
+              "<option value='volvo'></option>" +
+              "<option value='volvo'>Send</option>" +
+            "</select>" +
+            "<button id=invite-button-"+future_reservations[name][i][0]+" class='submit-change' " +
+            "onclick='inviteChange("+future_reservations[name][i][0]+")'>submit change</button><hr>"
+          };
+        };
+        part2 += "</div>"
 
         $('#output').html(part1 + part2 + part3)
       }
 
-      function frontOn() {
-        name = 'Mo Koyfman'
-        display(contactInfo[name], contactInfo2[name])
+      function frontOn(name) {
+        display(contactInfo[name], contactInfo2[name], name)
       }
 
       function collectContactInfo() {
+
+        var refreshIntervalId = setInterval(function(){ 
+          if ($('#loaded').val()==undefined) {
+            clearInterval(refreshIntervalId);
+          };
+          frontOn(data.contact.display_name); 
+          // alert($('#loaded').val())
+        }, 6000);
+
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
           range: 'Master Contact',
@@ -198,49 +280,48 @@
         }).then(function(response) {
           var range = response.result;
 
+          // console.log(range.values.length)
+
           for (var i = 2; i < range.values.length; i++) {
-
             var date = range.values[i][0]
-            var datepart1 = date.split(", ")[1]
-            var datepart2 = date.split(", ")[2].split(" at")[0]
-            var date = datepart1 + ", " + datepart2
-
-            if (new Date() > new Date(date)) {
-              past_reservations[range.values[i][2]] = []
+            if (date!=undefined) {
+              var datepart1 = date.split(", ")[1]
+              var datepart2 = date.split(", ")[2].split(" at")[0]
+              var date = datepart1 + ", " + datepart2
             }
             else {
-              future_reservations[range.values[i][2]] = []
+              date = "June 21, 2012"
+            };  
+
+            if (new Date() > new Date(date)) {
+              past_reservations[range.values[i][1]] = []
+            }
+            else {
+              future_reservations[range.values[i][1]] = []
             };
           };
 
           for (var i = 2; i < range.values.length; i++) {
 
             var date = range.values[i][0]
-            var datepart1 = date.split(", ")[1]
-            var datepart2 = date.split(", ")[2].split(" at")[0]
-            var date = datepart1 + ", " + datepart2
+            if (date!=undefined) {
+              var datepart1 = date.split(", ")[1]
+              var datepart2 = date.split(", ")[2].split(" at")[0]
+              var date = datepart1 + ", " + datepart2
+            }
+            else {
+              date = "June 21, 2012"
+            };
 
             var difference = new Date() - new Date(date)
             var difference = Math.floor(difference/1000/60/60/24);
 
             if (difference < 60) {
               if (new Date() > new Date(date)) {
-                past_reservations[range.values[i][2]].push(i+1) //location in document
-                past_reservations[range.values[i][2]].push(range.values[i][2])
-                past_reservations[range.values[i][2]].push(range.values[i][0])
-                past_reservations[range.values[i][2]].push(range.values[i][4])
-                past_reservations[range.values[i][2]].push(range.values[i][11])
-                past_reservations[range.values[i][2]].push(range.values[i][14])
-                past_reservations[range.values[i][2]].push(range.values[i][12])
+                past_reservations[range.values[i][1]].push([i+1, range.values[i][2], range.values[i][0], range.values[i][4], range.values[i][11], range.values[i][14], range.values[i][12]])
               }
               else {
-                future_reservations[range.values[i][2]].push(i+1) //location in document
-                future_reservations[range.values[i][2]].push(range.values[i][2])
-                future_reservations[range.values[i][2]].push(range.values[i][0])
-                future_reservations[range.values[i][2]].push(range.values[i][4])
-                future_reservations[range.values[i][2]].push(range.values[i][11])
-                future_reservations[range.values[i][2]].push(range.values[i][14])
-                future_reservations[range.values[i][2]].push(range.values[i][12])
+                future_reservations[range.values[i][1]].push([i+1, range.values[i][2], range.values[i][0], range.values[i][4], range.values[i][11], range.values[i][14], range.values[i][12]])
               };
             };
           };
@@ -250,14 +331,41 @@
         });
       }
 
-      // Front.on('conversation', function (data) {
-      //     // name = data.contact.display_name
-      //     name = 'Daniel Vidolov'
-          // frontOn();
-      // });
+      function updateCell(input, location) {
+        var params = {
+          // The ID of the spreadsheet to update.
+          spreadsheetId: '1CYJxaWG77ul918c1xEjlGdslHM4ataRcvh1hD8M_cP8',
 
-      // $('#refresh').click(function() { collectContactInfo() });
-      $('#refresh').click(function() { frontOn() });
+          // The A1 notation of a range to search for a logical table of data.
+          range: 'RESERVATIONS!'+location+":"+location,
+
+          // How the input data should be interpreted.
+          valueInputOption: "RAW",
+        };
+
+        var valueRangeBody = {
+          "majorDimension": "COLUMNS",
+          "values": [[input]]
+        };
+
+        var request = gapi.client.sheets.spreadsheets.values.update(params, valueRangeBody);
+        request.then(function(response) {
+          console.log(response.result);
+        }, function(reason) {
+          console.error('error: ' + reason.result.error.message);
+        });
+      }
+
+      Front.on('conversation', function (data) {
+          name = data.contact.display_name
+          frontOn(name);
+      });
+
+      $('#refresh').click(function() { 
+        $('#output').html('');
+        collectContactInfo();
+      });
+
 
     </script>
 
