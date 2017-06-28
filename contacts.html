@@ -359,6 +359,9 @@
       Front.on('conversation', function (data) {
         $('#output').html('');
         name = data.contact.display_name
+        if (name.split(', ')[1]!=undefined) {
+          name = name.split(', ')[1] + " " + name.split(', ')[0]
+        };
         $('h3').html(name)
         frontOn(name);
       });
