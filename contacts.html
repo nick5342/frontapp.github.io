@@ -10,7 +10,7 @@
     <script type="text/javascript" src="https://dl.frontapp.com/libs/frontjs.min.js"></script>
     <script type="text/javascript" src="test-plugin.js"></script>
     <style>
-      h2 {
+      h3 {
         text-align: center;
       }
       #signout-button, #authorize-button {
@@ -357,9 +357,10 @@
       }
 
       Front.on('conversation', function (data) {
-          name = data.contact.display_name
-          $('h3').html(name)
-          frontOn(name);
+        $('#output').html('');
+        name = data.contact.display_name
+        $('h3').html(name)
+        frontOn(name);
       });
 
       $('#refresh').click(function() { 
