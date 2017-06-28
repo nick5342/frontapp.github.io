@@ -54,7 +54,7 @@
   <body>
     <div class="centered-div"><button id="refresh" onclick="return false">&#8634; Refresh</button></div>
 
-    <h3>data.contact.display_name</h3>
+    <h3></h3>
 
     <div id="output"></div>
 
@@ -358,6 +358,7 @@
 
       Front.on('conversation', function (data) {
           name = data.contact.display_name
+          $('h3').html(name)
           frontOn(name);
       });
 
