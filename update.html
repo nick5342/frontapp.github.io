@@ -137,7 +137,7 @@
       function collectNames() {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1qyrXhXNsrDepYuIGALw7oEMP2qKDd5AEBUulhDU57OE',
-          range: 'Name List!G:G',
+          range: 'Name List!H:H',
         }).then(function(response) {
           var range = response.result;
           for (var i = 1; i < range.values.length; i++) {
@@ -174,7 +174,7 @@
           range: 'Requests',
 
           // How the input data should be interpreted.
-          valueInputOption: "RAW",
+          valueInputOption: "USER_ENTERED",
 
           // How the input data should be inserted.
           insertDataOption: 'INSERT_ROWS',
@@ -220,20 +220,22 @@
         else {return number};
       }
 
-      weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-      months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      // weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      // months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
       function formatTime() {
         time = new Date()
 
-        return(weekdays[time.getDay()] + ", " + months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ", " + (time.getHours() % 12 || 12) + ":" + addZeros(time.getMinutes()) + ":" + addZeros(time.getSeconds()) + " " + ampm(time.getHours()))
+        return(time.getMonth()+"/"+time.getDate()+"/"+time.getFullYear()+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds())
+        // return(weekdays[time.getDay()] + ", " + months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ", " + (time.getHours() % 12 || 12) + ":" + addZeros(time.getMinutes()) + ":" + addZeros(time.getSeconds()) + " " + ampm(time.getHours()))
       }
 
       function formatDate() {
         var output = $('.form-date').val()
-        var dayOfWeek = new Date(output).getDay();    
-        var output = output.toString().split("/")
-        return(weekdays[dayOfWeek] + ", " + months[removeZeros(output[0])] + " " + removeZeros(output[1]) + ", " + output[2])
+        return(output)
+        // var dayOfWeek = new Date(output).getDay();    
+        // var output = output.toString().split("/")
+        // return(weekdays[dayOfWeek] + ", " + months[removeZeros(output[0])] + " " + removeZeros(output[1]) + ", " + output[2])
       }
 
       $('#commit-changes').click(function() {
