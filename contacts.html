@@ -77,7 +77,7 @@
 
 
     <script type="text/javascript">
-      data = {"contact":{"display_name":"Rajeev Patel"}} //for testing in browser
+      // data = {"contact":{"display_name":"Eugene Gladstone"}} //for testing in browser
 
       // Client ID and API key from the Developer Console
       // var CLIENT_ID = '590936402413-hr4uj4vasgeirpc507ehr3s4k3nchh9b.apps.googleusercontent.com';
@@ -157,6 +157,36 @@
       console.log(past_reservations)
       console.log(future_reservations)
       
+      function minTommss(serial){
+        if (serial==0.00) {return ""};
+        var utc_days  = Math.floor(serial - 25569);
+        var utc_value = utc_days * 86400;                                        
+        var date_info = new Date(utc_value * 1000);
+        var fractional_day = serial - Math.floor(serial) + 0.0000001;
+        var total_seconds = Math.floor(86400 * fractional_day);
+        var seconds = total_seconds % 60;
+        total_seconds -= seconds;
+        var hours = Math.floor(total_seconds / (60 * 60));
+        var minutes = Math.floor(total_seconds / 60) % 60;
+        // return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+        return hours + ":" + minutes + ":" + seconds
+      }
+
+      function minTommssFull(serial){
+        if (serial==0.00) {return ""};
+        var utc_days  = Math.floor(serial - 25569);
+        var utc_value = utc_days * 86400;                                        
+        var date_info = new Date(utc_value * 1000);
+        var fractional_day = serial - Math.floor(serial) + 0.0000001;
+        var total_seconds = Math.floor(86400 * fractional_day);
+        var seconds = total_seconds % 60;
+        total_seconds -= seconds;
+        var hours = Math.floor(total_seconds / (60 * 60));
+        var minutes = Math.floor(total_seconds / 60) % 60;
+        return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate()+1, hours, minutes, seconds);
+        // return hours + ":" + minutes + ":" + seconds
+      }
+
       function statusChange(id) {
         value = $("#status"+id).find(':selected').text()
         updateCell(value, "L" + id)
@@ -172,7 +202,7 @@
       }
 
       function confirmedChange(id) {
-        value = $("#confirmed"+id).find(':selected').text()
+        value = $("#confirmed"+id).val();
         updateCell(value, "O" + id)
         $('#output').html('');
         collectContactInfo();
@@ -183,7 +213,7 @@
 
         var part1 = "<p>Email: " + array[0] + "<br>Phone: " + array[1] + "<br>Restaurant: " + array[2] + "</p><p>Profile: </p><div id='scrollbox'>" + array[3] + "</div><p>Requests: " + array2[0] + "<br>Request frequency: " + array2[1] + "<br>Success rate: " + array2[2] + "</p>"
 
-        var part3 = "<p><b>Recent reservations: </b></p><div class='centered-div'><br>"
+        var part3 = "<p id='checkMe'><b>Recent reservations: </b></p><div class='centered-div'><br>"
         // console.log(past_reservations[name])
         if (name in past_reservations) {
           // console.log(past_reservations[name])
@@ -269,7 +299,7 @@
       function collectContactInfo() {
 
         var refreshIntervalId = setInterval(function(){ 
-          if ($('#loaded').val()==undefined || $('#scrollbox').val()==undefined) {
+          if ($('#loaded').val()==undefined || $('#checkMe').val()==undefined) {
             clearInterval(refreshIntervalId);
           };
           frontOn(data.contact.display_name); 
@@ -277,87 +307,65 @@
         }, 6000);
 
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
-          range: 'Master Contact',
-        }).then(function(response) {
-          var range = response.result;
-          for (var i = 2; i < range.values.length; i++) {
-            contactInfo[range.values[i][0]] = [range.values[i][7], range.values[i][8], range.values[i][4], range.values[i][23]]
-          };
-        }, function(response) {
-          console.log('Error: ' + response.result.error.message);
-        }); 
+            spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
+            range: 'Master Contact',
+          }).then(function(response) {
+            var range = response.result;
+            for (var i = 2; i < range.values.length; i++) {
+              contactInfo[range.values[i][0]] = [range.values[i][7], range.values[i][8], range.values[i][4], range.values[i][23]]
+            };
+          }, function(response) {
+            console.log('Error: ' + response.result.error.message);
+          }); 
 
-        gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
-          range: 'FAQs by Members',
-        }).then(function(response) {
-          var range = response.result;
+          gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '12FB3gJRZRk0Pp9aZTZxNu3N49xdrabDNg-pwJjCI638',
+            range: 'FAQs by Members',
+          }).then(function(response) {
+            var range = response.result;
 
-          for (var i = 2; i < range.values.length; i++) {
-            contactInfo2[range.values[i][0]] = [range.values[i][5], range.values[i][7], range.values[i][13]]
-          };
+            for (var i = 2; i < range.values.length; i++) {
+              contactInfo2[range.values[i][0]] = [range.values[i][5], range.values[i][7], range.values[i][13]]
+            };
 
-        }, function(response) {
-          console.log('Error: ' + response.result.error.message);
+          }, function(response) {
+            console.log('Error: ' + response.result.error.message);
         });
 
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1CYJxaWG77ul918c1xEjlGdslHM4ataRcvh1hD8M_cP8',
-          range: 'RESERVATIONS',
-        }).then(function(response) {
-          var range = response.result;
+            spreadsheetId: '1CYJxaWG77ul918c1xEjlGdslHM4ataRcvh1hD8M_cP8',
+            range: 'RESERVATIONS',
+            valueRenderOption: 'UNFORMATTED_VALUE',
+          }).then(function(response) {
+            var range = response.result;
 
-          // console.log(range.values.length)
+            // console.log(range.values.length)
 
-          for (var i = 2; i < range.values.length; i++) {
-            past_reservations[range.values[i][1]] = []
-            future_reservations[range.values[i][1]] = []
-            // // console.log(range.values)
-            // var date = range.values[i][3]
-            // // console.log("-_-_-_-")
-            // if (date!=undefined) {
-            //   date = new Date(date)
-            //   // var datepart1 = date.split(", ")[1]
-            //   // var datepart2 = date.split(", ")[2].split(" at")[0]
-            //   // var date = datepart1 + ", " + datepart2
-            // }
-            // else {
-            //   date = new Date(12/12/2012)
-            // };  
-
-            // if (new Date() > date) {
-            //   past_reservations[range.values[i][1]] = []
-            // }
-            // else {
-            //   future_reservations[range.values[i][1]] = []
-            // };
+            for (var i = 2; i < range.values.length; i++) {
+              past_reservations[range.values[i][1]] = []
+              future_reservations[range.values[i][1]] = []
           };
+            
+          months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
           for (var i = 2; i < range.values.length; i++) {
 
             var date = range.values[i][3]
             if (date!=undefined) {
               var nowdate = new Date()
-              var date = new Date(date + " " + new Date().getFullYear())
-              // var datepart1 = date.split(", ")[1]
-              // var datepart2 = date.split(", ")[2].split(" at")[0]
-              // var date = datepart1 + ", " + datepart2
-
+              var date = new Date(minTommssFull(date))
+              var date_pretty = months[date.getMonth()] + " " + date.getDate()
               var difference =  Math.round(Math.abs((nowdate.getTime() - date.getTime())/(24*60*60*1000)));
 
                 if (nowdate > date) {
                   if (difference < 60) {
-                    past_reservations[range.values[i][1]].push([i+1, range.values[i][2], range.values[i][3], range.values[i][4], range.values[i][11], range.values[i][14], range.values[i][12], range.values[i][6]])
+                    past_reservations[range.values[i][1]].push([i+1, range.values[i][2], date_pretty, range.values[i][4], range.values[i][11], minTommss(range.values[i][14]), range.values[i][12], minTommss(range.values[i][6])])
                   }
                 }
                 else {
-                  future_reservations[range.values[i][1]].push([i+1, range.values[i][2], range.values[i][3], range.values[i][4], range.values[i][11], range.values[i][14], range.values[i][12], range.values[i][6]])
+                  future_reservations[range.values[i][1]].push([i+1, range.values[i][2], date_pretty, range.values[i][4], range.values[i][11], minTommss(range.values[i][14]), range.values[i][12], minTommss(range.values[i][6])])
                 };
 
-            }
-            else {
-              // console.log(i)
             };
           };
 
