@@ -1,2 +1,2 @@
-# frontapp.github.io
-Front's developer resources
+# Contact Managment for Front and Google Spreadsheets
+This application to view and edit information about Front contacts. Using the Google Sheets and Front APIs, and built as a Javascript plugin, it has the ability to recognize the name of a conversation's contact, and pull or update data about that contact on associated spreadsheets.

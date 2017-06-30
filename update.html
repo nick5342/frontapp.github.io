@@ -8,7 +8,6 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="https://dl.frontapp.com/libs/frontjs.min.js"></script>
-    <script type="text/javascript" src="test-plugin.js"></script>
     <style>
       h2 {
         text-align: center;
@@ -220,26 +219,18 @@
         else {return number};
       }
 
-      // weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-      // months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
       function formatTime() {
         time = new Date()
 
-        return(time.getMonth()+"/"+time.getDate()+"/"+time.getFullYear()+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds())
-        // return(weekdays[time.getDay()] + ", " + months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ", " + (time.getHours() % 12 || 12) + ":" + addZeros(time.getMinutes()) + ":" + addZeros(time.getSeconds()) + " " + ampm(time.getHours()))
+        return((time.getMonth()+1)+"/"+time.getDate()+"/"+time.getFullYear()+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds())
       }
 
       function formatDate() {
         var output = $('.form-date').val()
         return(output)
-        // var dayOfWeek = new Date(output).getDay();    
-        // var output = output.toString().split("/")
-        // return(weekdays[dayOfWeek] + ", " + months[removeZeros(output[0])] + " " + removeZeros(output[1]) + ", " + output[2])
       }
 
       $('#commit-changes').click(function() {
-        // var currentTime = new Date();
         var name = $('.form-name').val();
         var restaurant = $('.form-restaurant').val();
         var date = $('.form-date').val();

@@ -8,7 +8,6 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="https://dl.frontapp.com/libs/frontjs.min.js"></script>
-    <script type="text/javascript" src="test-plugin.js"></script>
     <style>
       h3 {
         text-align: center;
@@ -50,13 +49,8 @@
         margin: auto;
         width: auto;
         display: inline-block;
-      }
-      .reservations-buttons {
-        text-align: right;
-        margin: auto;
-        width: auto;
-        display: inline-block;
-      }
+/*        width: 550px;
+*/      }
 
     </style>
 
@@ -77,7 +71,7 @@
 
 
     <script type="text/javascript">
-      // data = {"contact":{"display_name":"Eugene Gladstone"}} //for testing in browser
+      data = {"contact":{"display_name":"Leigh Abramson"}} //for testing in browser
 
       // Client ID and API key from the Developer Console
       // var CLIENT_ID = '590936402413-hr4uj4vasgeirpc507ehr3s4k3nchh9b.apps.googleusercontent.com';
@@ -154,8 +148,6 @@
       contactInfo2 = {}
       past_reservations = {}
       future_reservations = {}
-      console.log(past_reservations)
-      console.log(future_reservations)
       
       function minTommss(serial){
         if (serial==0.00) {return ""};
@@ -168,7 +160,6 @@
         total_seconds -= seconds;
         var hours = Math.floor(total_seconds / (60 * 60));
         var minutes = Math.floor(total_seconds / 60) % 60;
-        // return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
         return hours + ":" + minutes + ":" + seconds
       }
 
@@ -184,7 +175,17 @@
         var hours = Math.floor(total_seconds / (60 * 60));
         var minutes = Math.floor(total_seconds / 60) % 60;
         return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate()+1, hours, minutes, seconds);
-        // return hours + ":" + minutes + ":" + seconds
+      }
+
+      function addZeros(number) {
+        if (number.toString().length < 2) {return "0" + number.toString()}
+        else { return number.toString() };
+      }
+
+      function formatTime(time) {
+        if (time == "NaN:NaN:NaN" || time == "") {return ""};
+        time = time.toString().split(":")
+        return addZeros(time[0])+":"+addZeros(time[1])
       }
 
       function statusChange(id) {
@@ -214,17 +215,17 @@
         var part1 = "<p>Email: " + array[0] + "<br>Phone: " + array[1] + "<br>Restaurant: " + array[2] + "</p><p>Profile: </p><div id='scrollbox'>" + array[3] + "</div><p>Requests: " + array2[0] + "<br>Request frequency: " + array2[1] + "<br>Success rate: " + array2[2] + "</p>"
 
         var part3 = "<p id='checkMe'><b>Recent reservations: </b></p><div class='centered-div'><br>"
-        // console.log(past_reservations[name])
+
         if (name in past_reservations) {
-          // console.log(past_reservations[name])
+
           for (var i = past_reservations[name].length-1; i>=0; i--) {
             part3 += "<div class='reservations-info'>" + past_reservations[name][i][1] +
             ",  " + past_reservations[name][i][2] +
             ", " + past_reservations[name][i][3] + " people" +
             ", " + past_reservations[name][i][4] +
-            "<br><b>Prefered Exact Time: </b>" + past_reservations[name][i][7] +
-            ", <b>Confirmed Time: </b>" + past_reservations[name][i][5] +
-            ", <b>Calendar Invite: </b>" + past_reservations[name][i][6] + "</div><br><div class='reservations-buttons'>" +
+            "<br><b>Preferred Exact Time: </b>" + formatTime(past_reservations[name][i][7]) +
+            ", <b>Confirmed Time: </b>" + formatTime(past_reservations[name][i][5]) +
+            ", <b>Calendar Invite: </b>" + past_reservations[name][i][6] + "<br>" +
             "<br>Change Status: <select id=status"+past_reservations[name][i][0]+" name='status'>" +
               "<option value='volvo'></option>" +
               "<option value='volvo'>CANCELED</option>" +
@@ -254,14 +255,14 @@
 
         var part2 = "<p><b>Future reservations: </b></p><div class='centered-div'><br>"
         if (name in future_reservations) {
-          for (var i = 0; i < future_reservations[name].length-1; i++) {
+          for (var i = future_reservations[name].length-1; i>=0; i--) {
             part2 += "<div class='reservations-info'>" + future_reservations[name][i][1] +
             ",  " + future_reservations[name][i][2] +
             ", " + future_reservations[name][i][3] + " people" +
             ", " + future_reservations[name][i][4] +
-            "<br><b>Prefered Exact Time: </b>" + future_reservations[name][i][7] +
-            ", <b>Confirmed Time: </b>" + future_reservations[name][i][5] +
-            ", <b>Calendar Invite: </b>" + future_reservations[name][i][6] + "</div><br><div class='reservations-buttons'>" +
+            "<br><b>Prefered Exact Time: </b>" + formatTime(future_reservations[name][i][7]) +
+            ", <b>Confirmed Time: </b>" + formatTime(future_reservations[name][i][5]) +
+            ", <b>Calendar Invite: </b>" + future_reservations[name][i][6] + "<br>" +
             "<br>Change Status: <select id=status"+future_reservations[name][i][0]+" name='status'>" +
               "<option value='volvo'></option>" +
               "<option value='volvo'>CANCELED</option>" +
@@ -303,7 +304,7 @@
             clearInterval(refreshIntervalId);
           };
           frontOn(data.contact.display_name); 
-          // alert($('#loaded').val())
+
         }, 6000);
 
         gapi.client.sheets.spreadsheets.values.get({
@@ -339,8 +340,6 @@
           }).then(function(response) {
             var range = response.result;
 
-            // console.log(range.values.length)
-
             for (var i = 2; i < range.values.length; i++) {
               past_reservations[range.values[i][1]] = []
               future_reservations[range.values[i][1]] = []
@@ -365,7 +364,6 @@
                 else {
                   future_reservations[range.values[i][1]].push([i+1, range.values[i][2], date_pretty, range.values[i][4], range.values[i][11], minTommss(range.values[i][14]), range.values[i][12], minTommss(range.values[i][6])])
                 };
-
             };
           };
 
