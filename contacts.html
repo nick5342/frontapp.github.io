@@ -227,6 +227,29 @@
             "<br><b>Preferred Exact Time: </b>" + formatTime(past_reservations[name][i][7]) +
             ", <b>Confirmed Time: </b>" + formatTime(past_reservations[name][i][5]) +
             ", <b>Calendar Invite: </b>" + past_reservations[name][i][6] + "<br>" +
+                "<br>Change Status: <select id=status"+past_reservations[name][i][0]+" name='status'>" +
+ -              "<option value='volvo'></option>" +
+ -              "<option value='volvo'>CANCELED</option>" +
+ -              "<option value='saab'>NM PENDING</option>" +
+ -              "<option value='fiat'>BOL PENDING</option>" +
+ -              "<option value='audi'>DONE</option>" +
+ -              "<option value='audi'>DONE 2ND CHOICE</option>" +
+ -              "<option value='audi'>NOT POSSIBLE</option>" +
+ -              "<option value='audi'>FUTURE REQUEST</option>" +
+ -              "<option value='audi'>DID NOT TAKE</option>" +
+ -              "<option value='audi'>ELG PENDING</option>" +
+ -            "</select>" +
+ -            "<button id=status-button-"+past_reservations[name][i][0]+" class='submit-change' " +
+ -            "onclick='statusChange("+past_reservations[name][i][0]+")'>submit change</button><br>" +
+ -            "Change Invite: <select id=invite"+past_reservations[name][i][0]+" name='invite'>" +
+ -              "<option value='volvo'></option>" +
+ -              "<option value='volvo'>Send</option>" +
+ -            "</select>" +
+ -            "<button id=invite-button-"+past_reservations[name][i][0]+" class='submit-change' " +
+ -            "onclick='inviteChange("+past_reservations[name][i][0]+")'>submit change</button><br>" +
+ -            "Change Confirmed Time: <input type='text' id=confirmed"+past_reservations[name][i][0]+"></input>" +
+ -            "<button id=invite-button-"+past_reservations[name][i][0]+" class='submit-change' " +
+ -            "onclick='confirmedChange("+past_reservations[name][i][0]+")'>submit change</button></div><hr>"
           };
         };
         part3 += "</div>"
